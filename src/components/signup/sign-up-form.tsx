@@ -24,9 +24,9 @@ const signUpSchema = z
       .min(1, "Enter your password")
       .min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string().min(1, "Confirm your password"),
-    terms: z.literal(true, {
-      errorMap: () => ({ message: "You must agree to the terms" }),
-    }),
+    terms: z
+      .boolean()
+      .refine((v) => v === true, { message: "You must agree to the terms" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match",

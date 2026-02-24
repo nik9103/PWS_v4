@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { AppShell } from "@/components/shared/app-shell";
 
 export default function TestLayout({
@@ -5,5 +6,9 @@ export default function TestLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <AppShell>{children}</AppShell>;
+  return (
+    <Suspense fallback={<div className="flex min-h-dvh items-center justify-center font-sans">Загрузка…</div>}>
+      <AppShell>{children}</AppShell>
+    </Suspense>
+  );
 }

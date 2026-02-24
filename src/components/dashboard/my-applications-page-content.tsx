@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { CompetitionStatusVariant } from "@/components/dashboard/competition-status-block";
 import { CompetitionCard } from "@/components/dashboard/competition-card";
 import type { CompetitionItem } from "@/components/dashboard/competitions-datatable";
 import {
@@ -13,14 +12,32 @@ import {
 } from "@/components/ui/select";
 import { useUserProfile } from "@/hooks/use-user-profile";
 
-// Варианты статусов для страницы «Мои заявки»
-const APPLICATION_VARIANTS: CompetitionStatusVariant[] = [
+/** Значения фильтра на странице «Мои заявки» — только статусы заявки, не все варианты карточки. */
+type FilterValue =
+  | "all"
+  | "under_review"
+  | "rejected"
+  | "sign_documents"
+  | "document_errors"
+  | "admitted";
+type SortValue = "nearest" | "late";
+
+const APPLICATION_FILTER_VARIANTS: FilterValue[] = [
   "under_review",
   "rejected",
   "sign_documents",
   "document_errors",
   "admitted",
 ];
+
+const FILTER_LABELS: Record<FilterValue, string> = {
+  all: "Все заявки",
+  under_review: "На рассмотрении",
+  rejected: "Отклонённые",
+  sign_documents: "Требуется подпись",
+  document_errors: "Ошибки в документах",
+  admitted: "Допущен",
+};
 
 // TODO: REMOVE BEFORE RELEASE — демо-данные, заменить на выборку из Supabase (мои заявки)
 const DEMO_MY_APPLICATIONS: CompetitionItem[] = [
@@ -86,18 +103,6 @@ const DEMO_MY_APPLICATIONS: CompetitionItem[] = [
   },
 ];
 
-type FilterValue = "all" | CompetitionStatusVariant;
-type SortValue = "nearest" | "late";
-
-const FILTER_LABELS: Record<FilterValue, string> = {
-  all: "Все заявки",
-  under_review: "На рассмотрении",
-  rejected: "Отклонённые",
-  sign_documents: "Требуется подпись",
-  document_errors: "Ошибки в документах",
-  admitted: "Допущен",
-};
-
 function filterApplications(
   items: CompetitionItem[],
   filter: FilterValue
@@ -161,7 +166,7 @@ export function MyApplicationsPageContent() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">{FILTER_LABELS.all}</SelectItem>
-            {APPLICATION_VARIANTS.map((v) => (
+            {APPLICATION_FILTER_VARIANTS.map((v) => (
               <SelectItem key={v} value={v}>
                 {FILTER_LABELS[v]}
               </SelectItem>

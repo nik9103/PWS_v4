@@ -345,7 +345,7 @@ export function CompetitionParticipantsTable() {
   return (
     <Card className="w-full rounded-xl shadow-sm py-0">
       <CardContent className="p-0">
-        <Tabs value={activeTab} onValueChange={setActiveTab} variant="line" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="flex items-center justify-between border-b border-border px-6">
             <TabsList
               variant="line"
