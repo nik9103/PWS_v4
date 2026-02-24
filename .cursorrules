@@ -1,0 +1,271 @@
+# STYLING
+- Never write custom CSS or inline styles
+- Never use arbitrary Tailwind values like w-[123px] or text-[14px]
+- Use only CSS variables from globals.css for colors, spacing, radius
+- Always use shadcn/ui components for UI — never create custom UI from scratch
+
+# COMPONENTS
+- Never modify files in /components/ui/ — these are shadcn/ui originals
+- Before creating any new component, scan /components/ for a similar existing one
+- Never duplicate components — always reuse existing ones
+- All file names in kebab-case: user-card.tsx, stat-card.tsx, filters-bar.tsx
+- Table rows must never duplicate — always use unique keys from real data
+- Before creating any component → run npx shadcn@latest add [name] if it exists in shadcn/ui
+- Never create inline custom styles for recurring UI patterns
+- Always check lib/constants.ts for existing style constants before styling
+- If pattern repeats 2+ times → create constant in lib/constants.ts and use it everywhere
+- Never modify dialog.tsx to fix positioning — fix the parent layout instead
+
+# FILE STRUCTURE
+- Full pages → app/[page-name]/page.tsx
+- Shared UI (sidebar, header, footer) → components/shared/
+- Page-specific blocks → components/[page-name]/
+- Complex logic (data fetching, filters, state) → hooks/use-[name].ts
+- Extract to a hook only when logic is 20+ lines or reused on 2+ pages
+
+# WHEN RECEIVING PAGE CODE
+1. Identify shared elements (sidebar, header) → move to components/shared/
+2. Identify page-specific blocks → move to components/[page-name]/
+3. Keep page.tsx as layout only — just imports and composition
+4. Add business logic as described in the task
+
+# UI UPDATES
+- When receiving updated UI code for existing component,
+  update only the visual layer
+- Never remove or replace existing business logic, hooks, or Supabase queries
+- Merge new UI with existing logic, do not overwrite
+- If user says "это код компонента [name] он был обновлён" →
+  update only styles and structure, keep all logic intact
+
+# UI INTERACTIVITY
+- Radio buttons → always add selection state with useState
+- Checkboxes in forms → always add checked state with useState
+- Cards with radio/checkbox → clicking card = selecting it, highlight with ring-2 ring-primary
+- Tabs → always add active tab state
+- Accordion → always add open/close state
+- Modal/Dialog → always add open state with trigger button
+- Dropdown → always add open state
+- After generating any component, check: are there interactive elements without state? Add it.
+
+# LAYOUT QUALITY
+- Full page layouts must always be min-h-screen
+- Two-column auth layouts: each column exactly w-1/2, both min-h-screen
+- Right decorative panel: flex-1 min-h-screen, no max-width restrictions
+- Never use max-w on full-height columns
+- Never let content dictate page height — page always fills viewport
+- Decorative background shapes from Figma → recreate via CSS or inline SVG
+- Cards with absolute positioning → preserve position (top/bottom/left/right)
+- After generating any page, verify: no clipped columns, no missing backgrounds
+
+# FONTS
+- Fonts load automatically via get-css-fonts.ts which reads globals.css
+- To change font → update --font-sans / --font-serif / --font-mono in :root in globals.css
+- Never touch layout.tsx for font changes
+- Fonts must exist in Google Fonts — verify before using
+
+# ASSETS
+- Before using any icon → check lucide-react first
+- If icon exists in lucide-react → use component, never download
+- If custom logo/icon not in lucide-react → export from Figma via API as SVG:
+  1. Get file ID and node ID from Figma link
+  2. Call Figma API: GET /v1/images/{file_id}?ids={node_id}&format=svg
+  3. Save to /public/assets/[name].svg
+- If banner/illustration/photo → export from Figma via API as PNG → /public/assets/
+- Store all exported assets in /public/assets/
+- Reference assets in code as /assets/[filename]
+- Never hardcode external image URLs
+- Figma access token is configured in Cursor MCP — use it directly
+
+# DESIGN SYSTEM ONLY
+- Never use browser default alerts, confirms, or prompts
+- All notifications → use Toaster from @/components/ui/sonner
+- All tooltips → use Tooltip from @/components/ui/tooltip
+- All errors/validation → use Form from @/components/ui/form
+- All modals → use Dialog from @/components/ui/dialog
+- Modal/Dialog content background → always use variable popover (bg-popover); DialogContent already uses it by default
+- All dropdowns → use DropdownMenu from @/components/ui/dropdown-menu
+- Never use window.alert, window.confirm, console.log for user feedback
+- Every user interaction must have feedback from design system components
+- Status badges: match design exactly — outline in design → outline, filled → filled
+
+# SUPABASE & DATABASE
+- When connecting any feature to Supabase, always create a migration file
+- Migration files → supabase/migrations/[timestamp]_[name].sql
+- Migration must include: CREATE TABLE IF NOT EXISTS, RLS policies, indexes
+- Never assume a table exists — always add IF NOT EXISTS
+- After creating migration, add comment at top: "Run in Supabase SQL Editor before testing"
+
+# MIGRATIONS
+- Always create migration files in supabase/migrations/[timestamp]_[name].sql
+- After every new migration, update supabase/migrations/setup.sql
+- setup.sql must contain all migrations in order
+- Always use CREATE TABLE IF NOT EXISTS and ADD COLUMN IF NOT EXISTS
+
+# RELEASE MODE
+- If CHANGELOG.md contains at least one release entry →
+  automatically use release mode for all DB changes
+- When user says "вывел в прод" →
+  create new release entry in CHANGELOG.md with today's date
+  and create supabase/migrations/release_N[number].sql
+  with all migrations since previous release
+- setup.sql never changes after first release
+
+# RELEASE NAMING
+- Release files: release_N1.sql, release_N2.sql, release_N3.sql
+- CHANGELOG entries: Release N1, Release N2, Release N3
+- Version increments by 1 on every prod deploy
+
+# README
+- Always keep README.md up to date
+- Must contain: project setup, env variables, how to run locally, deploy instructions
+- When adding new env variable → add to README immediately
+- When adding new migration → update README deploy steps
+
+# PIXEL PERFECT REVIEW
+- After generating any page or component, always send a follow-up message:
+  "Для pixel perfect сравнения — приложи скриншот из браузера
+  или ссылку на фрейм в Figma. Сверю 1:1 и исправлю отличия."
+- Never consider a component done without pixel perfect review
+- During review → perform DEEP professional analysis, not surface check:
+  1. Compare every spacing: padding, margin, gap — must match exactly
+  2. Compare every font: size, weight, color, line-height
+  3. Compare every color: background, border, text, icons
+  4. Compare every component: size, variant, border-radius
+  5. Compare layout: alignment, distribution, proportions
+  6. Compare states: hover, active, disabled, empty
+- Fix ALL differences found — never skip "minor" ones
+- After first fix → compare again, repeat until 98%+ match
+- Never say "практически совпадает" — always find and fix remaining differences
+- NEVER change what already matches — only fix what differs
+- Report every difference found as a numbered list before fixing
+
+# CONSISTENCY
+- Before creating any new component or page, scan existing components for style reference
+- New components must match existing ones: same input styles, same spacing, same button sizes
+- Never create components in isolation — always check what already exists first
+- When creating similar components (forms, cards, tables) → open existing one and match exactly
+
+# DASHBOARD CONCEPT
+- All roles (admin, user, manager etc.) share the same dashboard shell
+- Same layout, same sidebar structure, same menu behavior, same spacing
+- Roles differ ONLY in: visible menu items, accessible pages, available blocks
+- Never create separate dashboard layouts per role — one shell, role-based content
+- Role-based visibility controlled via props or auth context, not separate components
+- dashboard shell → app/dashboard/layout.tsx (shared for all roles)
+
+# CLEANUP BEFORE RELEASE
+- All demo components not related to project → mark with // TODO: REMOVE BEFORE RELEASE
+- When user says "Удалить мусор" → delete all files and blocks with this comment
+- Only run cleanup command before release, never during active development
+
+# FILE STRUCTURE STRICT
+- Never create (app) route groups unless explicitly asked
+- Never create folders named after block slugs (dashboard-shell-05, application-shell-18 etc.)
+- After importing any block → rename and move to correct location:
+  - Shell/layout blocks → components/shared/
+  - Page blocks → app/[page-name]/page.tsx
+  - Sub-components of block → components/[page-name]/
+- Never duplicate pages: if /dashboard exists → do not create second dashboard folder
+- If block creates demo page → delete it, keep only the component
+- Single source of truth for routes: app/ without route groups
+
+# AFTER BLOCK IMPORT CLEANUP
+- After installing any shadcn-studio block, always:
+  1. Rename files from slug names to semantic names (dashboard-shell-05.tsx → dashboard-shell.tsx)
+  2. Move components to correct folders per FILE STRUCTURE rules
+  3. Delete demo/example pages created by the block
+  4. Check for duplicate routes and remove them
+  5. Update all imports to match new paths
+
+
+
+# SHADCN STUDIO IMPORTS
+- After installing any shadcn-studio block → immediately move all files to correct folders
+- shared components → components/shared/
+- page-specific → components/[page-name]/
+- After moving all files → delete components/shadcn-studio/ folder completely including empty folders
+- Never leave empty folders behind
+
+# RESPONSIVE & LAYOUT
+- Every page must be tested mentally for mobile, tablet, desktop before finishing
+- Sidebar + main content → always use proper flex/grid, never overlap
+- Main content must have correct margin/padding accounting for sidebar width
+- Sidebar on mobile → always hidden by default, toggle via burger menu
+- Never let sidebar overlap page content — use SidebarProvider with proper layout
+- After generating any page with sidebar → verify: content not hidden behind sidebar
+
+# COLORS FROM DESIGN
+- Never guess or invent colors — always take exact colors from design reference
+- When given screenshot or Figma → extract exact color values, do not approximate
+- Semantic colors: success → green-600, warning → amber-600, error → red-600, info → blue-600
+- Always use /10 opacity for badge backgrounds: bg-green-600/10 text-green-600
+- When design shows outline → outline, filled → filled, never swap
+- If color is unclear from design → ask, never assume
+
+# TYPOGRAPHY IN TABLES
+- First meaningful column (name, title) → always font-semibold or font-medium
+- Secondary columns (category, type) → text-muted-foreground normal weight
+- Never change font weight from what design shows
+- When design shows bold text → font-semibold, never omit
+
+# COLORS STRICT
+- NEVER use hardcoded hex colors anywhere in code
+- ALWAYS use CSS variables from globals.css: text-foreground, text-muted-foreground, bg-primary etc.
+- When design shows any color → find matching CSS variable in globals.css, use that
+- If no matching variable exists → ask, never hardcode
+- Table text: primary content → text-foreground, secondary → text-muted-foreground
+- globals.css tokens are synced with Figma — always use tokens, hex values are redundant
+- When Figma shows #0A0A0A → this equals text-foreground, use text-foreground
+- Never extract raw hex from design when token exists
+
+# COMPONENT RECOGNITION
+- When given a design screenshot → identify ALL UI components before writing code
+- Never render a component as plain text or span if a design system component exists
+- Badge → always Badge component, never span
+- Button → always Button component, never div or a
+- Input → always Input component, never plain input
+- Before coding any element → ask: "does shadcn/ui have a component for this?"
+- If yes → use it, never create custom HTML equivalent
+
+# LOCALIZATION
+- All UI text by default in Russian
+- Labels, placeholders, buttons, tooltips, empty states → always Russian
+- Date formats → русская локаль через date-fns/locale/ru
+- Never use English text in UI unless it's a proper noun or brand name
+
+# COMPONENT SIZING
+- Always match component size to design reference exactly
+- Button sizes: sm=h-8, default=h-9, lg=h-10 — pick by visual size in design
+- Never upsize components when design shows small variant
+- text-muted-foreground is grey, text-foreground is near-black — never confuse them
+- When design shows dark/black text → text-foreground, never text-muted-foreground
+- When in doubt about size → use default, never go larger than design shows
+
+# DESIGN ACCURACY FROM SCREENSHOT
+- When given any screenshot → before coding, analyze:
+  1. Font sizes: heading, body, secondary text — map to text-sm/base/lg/xl/2xl
+  2. Spacing: gaps between elements — map to gap-2/4/6/8/12
+  3. Padding: inner spacing of containers — map to p-4/6/8/12
+  4. Component sizes: buttons, inputs, badges — map to sm/default/lg
+- Never guess — extract from screenshot before writing a single line
+- Font size mapping: ~12px→text-xs, ~14px→text-sm, ~16px→text-base, ~18px→text-lg, ~20px→text-xl
+- Spacing mapping: ~8px→gap-2, ~16px→gap-4, ~24px→gap-6, ~32px→gap-8
+- When design shows large padding → never compress, preserve breathing room
+
+# DROPDOWN & MENU HOVER STATES
+- Dropdown menu items hover → rounded-md, never full-width flat highlight
+- DropdownMenuItem hover must respect border-radius from design system
+- Never override default shadcn/ui hover styles on menu items
+- Menu items with icons → icon + text aligned with gap-2, icon text-muted-foreground
+- Submenu indicator → ChevronRight icon, right-aligned
+
+# BADGE SHAPE RULE
+- Badge с числом → rounded-full
+- Badge с текстом → согласно дизайн системе проекта
+
+# DRY PRINCIPLE
+- Before creating any new modal, form, page → scan project for similar components
+- If new component differs only in title, button text, or data → use mode/type prop in existing component
+- Pattern: one component + mode prop instead of two separate components
+- Examples: add/edit modal → one component, create/update form → one component, view/edit page → one component
+- Never duplicate structure — one component, different modes via props

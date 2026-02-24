@@ -1,0 +1,3 @@
+-- Run in Supabase SQL Editor before testing.
+-- All migrations in order — one file to run everything.
+-- Currently no migrations.

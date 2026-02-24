@@ -1,0 +1,111 @@
+---
+description: 
+alwaysApply: true
+---
+
+MANDATORY RULES — follow on every request without exception:
+
+1. PIXEL PERFECT
+After every generation: ask for screenshot.
+During review: deep professional analysis — compare every spacing, font, color, 
+component size, border-radius, alignment. Fix ALL differences.
+Repeat until 98%+ match. Never skip "minor" differences.
+Always list what differs before fixing.
+
+2. NO DESIGN DECISIONS
+Never change colors, spacing, or component styles beyond what was requested.
+If design shows black button — keep black. Never "improve" design on your own.
+
+3. DESIGN SYSTEM ONLY
+Never use window.alert, browser confirms, or default browser UI.
+All feedback to user → Toaster, Dialog, Tooltip from components/ui/ only.
+
+4. FILE STRUCTURE
+Never put logic in page.tsx — only imports and composition.
+Business logic → hooks/use-[name].ts
+Shared UI → components/shared/
+Page blocks → components/[page-name]/
+
+5. COMPONENTS
+Never modify files in components/ui/
+Always check if component exists before creating new one.
+
+6. INTERACTIVITY
+Always add useState for: radio buttons, checkboxes, tabs, modals, dropdowns.
+Never leave interactive elements without state.
+
+7. CONSISTENCY
+Before creating any new component, always read existing similar components first.
+New components must match existing ones in style, spacing, and structure.
+
+8. FILE STRUCTURE
+Never create (app) route groups. Never name files after block slugs.
+After any block import — rename to semantic names, move to correct folders, delete demo pages.
+One /dashboard, no duplicates.
+
+9. SHADCN STUDIO
+After installing shadcn-studio block: move all files to correct folders,
+then delete components/shadcn-studio/ completely including empty folders.
+Never leave empty folders behind.
+
+10. RESPONSIVE
+Every page with sidebar: main content must not be hidden behind it.
+Use correct layout: sidebar + flex-1 for content area.
+Mobile: sidebar hidden by default with toggle.
+Always verify layout before finishing.
+
+11.
+ALWAYS start every task by reading .cursorrules file in the project root.
+Follow all rules from .cursorrules on every request automatically.
+Never wait to be reminded — treat .cursorrules as mandatory context.
+
+12. COLORS
+Never hardcode any hex colors. Always use CSS variables from globals.css.
+Map any design color to existing tokens. If no token matches → ask before hardcoding.
+
+13. TOKEN MAPPING
+globals.css tokens are already synced with Figma design.
+When extracting colors from design → always map to CSS variables, never use raw hex.
+Mapping: darkest text → text-foreground, secondary text → text-muted-foreground,
+primary color → bg-primary text-primary, borders → border-border.
+If color from design matches a token → use token, never the hex value.
+
+14. COMPONENT RECOGNITION
+Before coding any UI element from a screenshot:
+1. Identify all components visible in the design
+2. Map each to shadcn/ui component: badge, button, input, select etc.
+3. Never use plain HTML when shadcn/ui component exists
+Badge is always Badge, never span. Button is always Button, never div.
+
+15. SHADCN FIRST
+Before creating ANY component → check if shadcn/ui has it.
+If yes → npx shadcn@latest add [name], never create from scratch.
+Calendar, DatePicker, Combobox, Select, Dialog — always install, never rewrite.
+
+16. LOCALIZATION
+All UI text in Russian by default: labels, placeholders, buttons, errors, empty states.
+Date formatting → date-fns with ru locale.
+Never use English in UI.
+
+17. SIZING & COLORS
+Match component sizes exactly to design.
+text-foreground = dark/black text, text-muted-foreground = grey secondary text.
+Never use muted-foreground for primary content.
+Button size → pick sm/default/lg by visual height in design, never guess larger.
+
+19. DESIGN ACCURACY
+When given any screenshot or Figma frame:
+1. First analyze all font sizes, spacing, padding, component sizes
+2. Map to Tailwind tokens before writing code
+3. Never compress spacing or downsize fonts
+4. Reproduce layout proportions exactly as shown
+
+20. HOVER STATES
+Dropdown menu hover → always rounded-md, never full-width flat.
+Never override shadcn/ui default hover styles.
+Use design system defaults for all interactive states.
+
+22. DRY PRINCIPLE
+Before creating any new modal, form, or page → scan project for similar components.
+If differs only in title, button, or data → use mode/type prop in existing component.
+Never duplicate structure — one component, different modes via props.
