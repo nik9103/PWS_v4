@@ -54,8 +54,8 @@ export function AddCompetitionForm({
   onCancel,
 }: AddCompetitionFormProps) {
   const [activeMenuId, setActiveMenuId] = useState<string>(MENU_ITEMS[0].id);
-  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
+  const sectionRefs = useRef<Record<string, HTMLElement>>({} as Record<string, HTMLElement>);
   const [fullName, setFullName] = useState("");
   const [shortName, setShortName] = useState("");
   const [formatType, setFormatType] = useState<"in-person" | "online">("online");
